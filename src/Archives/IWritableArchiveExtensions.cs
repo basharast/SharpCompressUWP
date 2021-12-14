@@ -85,6 +85,15 @@ namespace SharpCompress.Archives
 
                     }
                     var path = targetFolder.Path;
+                    //This should append the root folder to path
+                    try
+                    {
+                        path = path.Replace(Path.GetFileName(targetFolder.Path), "");
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
                     var filePath = file.Path;
                     var basicProperties = await file.GetBasicPropertiesAsync();
                     Stream outstream = await file.OpenStreamForReadAsync();

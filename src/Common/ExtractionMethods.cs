@@ -100,6 +100,7 @@ namespace SharpCompress.Common
                 var fileSize = reader.Entry.Size;
                 if (fileSize > 0)
                 {
+                    //Need to check the file if exists then ignore
                     StorageFile uncompressedFile = await extractTarget.CreateFileAsync(Path.GetFileName(reader.Entry.Key), CreationCollisionOption.ReplaceExisting);
                     using (Stream outstream = await uncompressedFile.OpenStreamForWriteAsync())
                     {

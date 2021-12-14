@@ -43,12 +43,14 @@ You will be able for now to compress or decompress with specific functions
 ```csharp
 var zipFile = await folder.CreateFileAsync("testFile.zip", CreationCollisionOption.ReplaceExisting);
 using (var stream = await zipFile.OpenStreamForWriteAsync()){
-using (var archive = ZipArchive.Create())
-{
-  //To avoid UI block you run this code into Task
-  await archive.AddAllFromDirectory(targetFolder);
-  archive.SaveTo(stream);
-}            
+
+ using (var archive = ZipArchive.Create())
+ {
+   //To avoid UI block you run this code into Task
+   await archive.AddAllFromDirectory(targetFolder);
+   archive.SaveTo(stream);
+ } 
+	           
 }
 ```
 

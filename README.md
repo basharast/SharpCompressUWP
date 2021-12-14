@@ -45,7 +45,7 @@ var zipFile = await folder.CreateFileAsync("testFile.zip", CreationCollisionOpti
 using (var stream = await zipFile.OpenStreamForWriteAsync())
 using (var archive = ZipArchive.Create())
 {
-  //To avoid UI block you run this code into Task
+  //To avoid UI block run this code into Task
   await archive.AddAllFromDirectory(targetFolder);
   archive.SaveTo(stream);
 }            

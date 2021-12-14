@@ -42,16 +42,14 @@ You will be able for now to compress or decompress with specific functions
 
 ```csharp
 var zipFile = await folder.CreateFileAsync("testFile.zip", CreationCollisionOption.ReplaceExisting);
-using (var stream = await zipFile.OpenStreamForWriteAsync()){
+using (var stream = await zipFile.OpenStreamForWriteAsync())
+using (var archive = ZipArchive.Create())
+{
+  //To avoid UI block you run this code into Task
+  await archive.AddAllFromDirectory(targetFolder);
+  archive.SaveTo(stream);
+}            
 
- using (var archive = ZipArchive.Create())
- {
-   //To avoid UI block you run this code into Task
-   await archive.AddAllFromDirectory(targetFolder);
-   archive.SaveTo(stream);
- } 
-	           
-}
 ```
 
 
@@ -62,14 +60,12 @@ Stream zipStream = await zipFile.OpenStreamForReadAsync();
 using (var zipArchive = ArchiveFactory.Open(zipStream)){
 //It should support 7z, zip, rar, gz, tar
 var reader = zipArchive.ExtractAllEntries();
-                       
+              
 while (reader.MoveToNextEntry()){
-
   if (!reader.Entry.IsDirectory){
     await reader.WriteEntryToDirectory(destinationFolder, new ExtractionOptions() { ExtractFullPath = true, Overwrite = true });
   }
-
- }
+}
 }
 
 ```

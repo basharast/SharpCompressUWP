@@ -46,14 +46,20 @@ using (var stream = await zipFile.OpenStreamForWriteAsync())
 using (var archive = ZipArchive.Create())
 {
   //To avoid UI block run this code into Task
+  
+  await archive.AddAllFromDirectory(targetFolder);
   //AddAllFromDirectory can extended to:
   //AddAllFromDirectory(storageFolder, string[] searchPattern, SearchOption.AllDirectories, IProgress<int> progress, bool IncludeRootFolder)
-  //IProgress<int> progress will report how many file queued
-  await archive.AddAllFromDirectory(targetFolder);
+  //IProgress<int> will report how many file queued
   
+  
+  archive.SaveTo(stream);
   //SaveTo can extended to:
   //SaveTo(Stream stream, IProgress<Dictionary<string, long>> progress, CancellationTokenSource cancellationTokenSource)
-  archive.SaveTo(stream);
+  //IProgress<Dictionary<string, long>> will provide file name / size like below:
+  //string fileName = value.FirstOrDefault().Key;
+  //string size = value.FirstOrDefault().Value.ToFileSize();
+  
 }            
 
 ```

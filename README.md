@@ -52,7 +52,7 @@ using (var archive = ZipArchive.Create())
   await archive.AddAllFromDirectory(targetFolder);
   
   //SaveTo can extended to:
-  //SaveTo(Stream stream, WriterOptions options, IProgress<Dictionary<string, long>> progress, CancellationTokenSource cancellationTokenSource)
+  //SaveTo(Stream stream, IProgress<Dictionary<string, long>> progress, CancellationTokenSource cancellationTokenSource)
   archive.SaveTo(stream);
 }            
 

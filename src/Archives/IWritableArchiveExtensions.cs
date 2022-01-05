@@ -52,7 +52,7 @@ namespace SharpCompress.Archives
         }
         public static async Task AddAllFromDirectory(
             this IWritableArchive writableArchive,
-            StorageFolder targetFolder, string[] searchPattern = null, SearchOption searchOption = SearchOption.AllDirectories)
+            StorageFolder targetFolder, string[] searchPattern = null, SearchOption searchOption = SearchOption.AllDirectories, IProgress<int> progress = null, bool IncludeRootFolder = true)
         {
             List<string> customExts = new List<string>();
             if (searchPattern != null)
@@ -68,6 +68,7 @@ namespace SharpCompress.Archives
                 var queryResult = targetFolder.CreateFileQueryWithOptions(queryOptions);
 
                 var files = await queryResult.GetFilesAsync();
+                int totalFiles = 0;
                 foreach (StorageFile file in files)
                 {
                     try
@@ -85,14 +86,16 @@ namespace SharpCompress.Archives
 
                     }
                     var path = targetFolder.Path;
-                    //This should append the root folder to path
-                    try
+                    if (IncludeRootFolder)
                     {
-                        path = path.Replace(Path.GetFileName(targetFolder.Path), "");
-                    }
-                    catch (Exception ex)
-                    {
+                        try
+                        {
+                            path = path.Replace(Path.GetFileName(targetFolder.Path), "");
+                        }
+                        catch (Exception ex)
+                        {
 
+                        }
                     }
                     var filePath = file.Path;
                     var basicProperties = await file.GetBasicPropertiesAsync();
@@ -100,6 +103,18 @@ namespace SharpCompress.Archives
                     DateTime utc = basicProperties.DateModified.Date;
                     var fileKey = filePath.Replace(path, "");
                     writableArchive.AddEntry(fileKey, outstream, true, (long)basicProperties.Size, utc);
+                    try
+                    {
+                        if (progress != null)
+                        {
+                            totalFiles++;
+                            progress.Report(totalFiles);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+
+                    }
                 }
             }
         }

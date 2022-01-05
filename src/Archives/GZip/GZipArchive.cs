@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SharpCompress.Common;
 using SharpCompress.Common.GZip;
 using SharpCompress.Readers;
@@ -141,7 +142,7 @@ namespace SharpCompress.Archives.GZip
 
         protected override void SaveTo(Stream stream, WriterOptions options,
                                        IEnumerable<GZipArchiveEntry> oldEntries,
-                                       IEnumerable<GZipArchiveEntry> newEntries)
+                                       IEnumerable<GZipArchiveEntry> newEntries, IProgress<Dictionary<string, long>> progress = null, CancellationTokenSource cancellationTokenSource = null)
         {
             if (Entries.Count > 1)
             {
@@ -152,6 +153,13 @@ namespace SharpCompress.Archives.GZip
                 foreach (var entry in oldEntries.Concat(newEntries)
                                                 .Where(x => !x.IsDirectory))
                 {
+                    if (cancellationTokenSource != null)
+                    {
+                        if (cancellationTokenSource.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                    }
                     using (var entryStream = entry.OpenEntryStream())
                     {
                         writer.Write(entry.Key, entryStream, entry.LastModifiedTime);

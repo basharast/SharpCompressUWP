@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SharpCompress.Common;
 using SharpCompress.Common.Zip;
 using SharpCompress.Common.Zip.Headers;
@@ -163,20 +164,39 @@ namespace SharpCompress.Archives.Zip
             }
         }
 
-        public void SaveTo(Stream stream)
+        public void SaveTo(Stream stream, IProgress<Dictionary<string, long>> progress = null, CancellationTokenSource cancellationTokenSource = null)
         {
-            SaveTo(stream, new WriterOptions(CompressionType.Deflate));
+            SaveTo(stream, new WriterOptions(CompressionType.Deflate), progress, cancellationTokenSource);
         }
 
         protected override void SaveTo(Stream stream, WriterOptions options,
                                        IEnumerable<ZipArchiveEntry> oldEntries,
-                                       IEnumerable<ZipArchiveEntry> newEntries)
+                                       IEnumerable<ZipArchiveEntry> newEntries, IProgress<Dictionary<string, long>> progress = null, CancellationTokenSource cancellationTokenSource = null)
         {
             using (var writer = new ZipWriter(stream, new ZipWriterOptions(options)))
             {
                 foreach (var entry in oldEntries.Concat(newEntries)
                                                 .Where(x => !x.IsDirectory))
                 {
+                    if (cancellationTokenSource != null)
+                    {
+                        if (cancellationTokenSource.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                    }
+                    if (progress != null)
+                    {
+                        try
+                        {
+                            var entryData = new Dictionary<string, long>();
+                            entryData.Add(Path.GetFileName(entry.Key), entry.Size);
+                            progress.Report(entryData);
+                        }catch(Exception ex)
+                        {
+
+                        }
+                    }
                     using (var entryStream = entry.OpenEntryStream())
                     {
                         writer.Write(entry.Key, entryStream, entry.LastModifiedTime);

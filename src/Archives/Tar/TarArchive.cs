@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SharpCompress.Common;
 using SharpCompress.Common.Tar;
 using SharpCompress.Common.Tar.Headers;
@@ -172,13 +173,20 @@ namespace SharpCompress.Archives.Tar
 
         protected override void SaveTo(Stream stream, WriterOptions options,
                                        IEnumerable<TarArchiveEntry> oldEntries,
-                                       IEnumerable<TarArchiveEntry> newEntries)
+                                       IEnumerable<TarArchiveEntry> newEntries, IProgress<Dictionary<string, long>> progress = null, CancellationTokenSource cancellationTokenSource = null)
         {
             using (var writer = new TarWriter(stream, new TarWriterOptions(options)))
             {
                 foreach (var entry in oldEntries.Concat(newEntries)
                                                 .Where(x => !x.IsDirectory))
                 {
+                    if (cancellationTokenSource != null)
+                    {
+                        if (cancellationTokenSource.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                    }
                     using (var entryStream = entry.OpenEntryStream())
                     {
                         writer.Write(entry.Key, entryStream, entry.LastModifiedTime, entry.Size);

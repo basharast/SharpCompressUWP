@@ -104,6 +104,18 @@ namespace SharpCompress.Common
                     StorageFile uncompressedFile = await extractTarget.CreateFileAsync(Path.GetFileName(reader.Entry.Key), CreationCollisionOption.ReplaceExisting);
                     using (Stream outstream = await uncompressedFile.OpenStreamForWriteAsync())
                     {
+                        /*using (Stream entryStream = reader.OpenEntryStream())
+                        {
+                            await entryStream.CopyToAsync(outstream);
+                            try
+                            {
+                                entryStream.Dispose();
+                            }
+                            catch (Exception e)
+                            {
+
+                            }
+                        }*/
                         reader.WriteEntryTo(outstream);
                     }
                 }

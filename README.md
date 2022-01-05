@@ -46,12 +46,12 @@ using (var stream = await zipFile.OpenStreamForWriteAsync())
 using (var archive = ZipArchive.Create())
 {
   //To avoid UI block run this code into Task
-  //Add all from directory can extended to:
+  //AddAllFromDirectory can extended to:
   //AddAllFromDirectory(storageFolder, string[] searchPattern, SearchOption.AllDirectories, IProgress<int> progress, bool IncludeRootFolder)
   //IProgress<int> progress will report how many file queued
   await archive.AddAllFromDirectory(targetFolder);
   
-  //Save to can extended to:
+  //SaveTo can extended to:
   //SaveTo(Stream stream, WriterOptions options, IProgress<Dictionary<string, long>> progress, CancellationTokenSource cancellationTokenSource)
   archive.SaveTo(stream);
 }            

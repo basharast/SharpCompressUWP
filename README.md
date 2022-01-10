@@ -49,7 +49,7 @@ using (var archive = ZipArchive.Create())
   
   await archive.AddAllFromDirectory(targetFolder);
   //AddAllFromDirectory can extended to:
-  //AddAllFromDirectory(storageFolder, string[] searchPattern, SearchOption.AllDirectories, IProgress<int> progress, bool IncludeRootFolder)
+  //AddAllFromDirectory(storageFolder, string[] searchPattern, SearchOption.AllDirectories, IProgress<int> progress, bool IncludeRootFolder, CancellationTokenSource cancellationTokenSource)
   //IProgress<int> will report how many file queued
   
   

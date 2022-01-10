@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using SharpCompress.Writers;
 using Windows.Storage;
@@ -52,7 +53,7 @@ namespace SharpCompress.Archives
         }
         public static async Task AddAllFromDirectory(
             this IWritableArchive writableArchive,
-            StorageFolder targetFolder, string[] searchPattern = null, SearchOption searchOption = SearchOption.AllDirectories, IProgress<int> progress = null, bool IncludeRootFolder = true)
+            StorageFolder targetFolder, string[] searchPattern = null, SearchOption searchOption = SearchOption.AllDirectories, IProgress<int> progress = null, bool IncludeRootFolder = true, CancellationTokenSource cancellationTokenSource = null)
         {
             List<string> customExts = new List<string>();
             if (searchPattern != null)
@@ -71,6 +72,10 @@ namespace SharpCompress.Archives
                 int totalFiles = 0;
                 foreach (StorageFile file in files)
                 {
+                    if (cancellationTokenSource != null && cancellationTokenSource.IsCancellationRequested)
+                    {
+                        break;
+                    }
                     try
                     {
                         if (customExts != null && customExts.Count > 0)

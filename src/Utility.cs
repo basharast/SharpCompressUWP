@@ -241,7 +241,7 @@ namespace SharpCompress
                 {
                     total += count;
                     destination.Write(array, 0, count);
-                    if (cancellationTokenSource.IsCancellationRequested)
+                    if (cancellationTokenSource!=null && cancellationTokenSource.IsCancellationRequested)
                     {
                         break;
                     }

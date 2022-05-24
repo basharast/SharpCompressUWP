@@ -268,7 +268,7 @@ namespace SharpCompress
                     destination.Write(array, 0, count);
                     iterations++;
                     readerExtractionListener.FireEntryExtractionProgress(entry, total, iterations);
-                    if (cancellationTokenSource.IsCancellationRequested)
+                    if (cancellationTokenSource!=null && cancellationTokenSource.IsCancellationRequested)
                     {
                         break;
                     }

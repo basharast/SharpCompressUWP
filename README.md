@@ -84,6 +84,10 @@ reader.EntryExtractionProgress += (sender, e) =>
 while (reader.MoveToNextEntry()){
   if (!reader.Entry.IsDirectory){
     await reader.WriteEntryToDirectory(destinationFolder, new ExtractionOptions() { ExtractFullPath = true, Overwrite = true });
+    //WriteEntryToDirectory can extended to:
+    //WriteEntryToDirectory(folder, options, cancellationTokenSource)
+    //                                       ^^^^^^^^^^^^^^^^^^^^^^^
+    //it will help to terminate the current entry directly if cancellation requested
   }
 }
 }

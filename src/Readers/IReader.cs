@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using SharpCompress.Common;
 
 namespace SharpCompress.Readers
@@ -19,7 +20,7 @@ namespace SharpCompress.Readers
         /// Decompresses the current entry to the stream.  This cannot be called twice for the current entry.
         /// </summary>
         /// <param name="writableStream"></param>
-        void WriteEntryTo(Stream writableStream);
+        void WriteEntryTo(Stream writableStream, CancellationTokenSource cancellationTokenSource = null);
 
         bool Cancelled { get; }
         void Cancel();

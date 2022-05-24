@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SharpCompress.Common;
 
 namespace SharpCompress.Readers
@@ -154,7 +155,7 @@ namespace SharpCompress.Readers
             }
         }
 
-        public void WriteEntryTo(Stream writableStream)
+        public void WriteEntryTo(Stream writableStream, CancellationTokenSource cancellationTokenSource = null)
         {
             if (wroteCurrentEntry)
             {
@@ -165,16 +166,16 @@ namespace SharpCompress.Readers
                 throw new ArgumentNullException("A writable Stream was required.  Use Cancel if that was intended.");
             }
 
-            Write(writableStream);
+            Write(writableStream, cancellationTokenSource);
             wroteCurrentEntry = true;
         }
 
-        internal void Write(Stream writeStream)
+        internal void Write(Stream writeStream, CancellationTokenSource cancellationTokenSource = null)
         {
             var streamListener = this as IReaderExtractionListener;
             using (Stream s = OpenEntryStream())
             {
-                s.TransferTo(writeStream, Entry, streamListener);
+                s.TransferTo(writeStream, Entry, streamListener, cancellationTokenSource);
             }
         }
 

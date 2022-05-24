@@ -1,6 +1,7 @@
 ﻿using SharpCompress.Readers;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -78,7 +79,7 @@ namespace SharpCompress.Common
         }
         //UWP WriteEntryToDirectory Function
         public static async Task WriteEntryToDirectory(IEntry entry, StorageFolder destinationDirectory,
-                                                 ExtractionOptions options, IReader reader)
+                                                 ExtractionOptions options, IReader reader, CancellationTokenSource cancellationTokenSource = null)
         {
             string file = Path.GetFileName(entry.Key);
             string fullDestinationDirectoryPath = destinationDirectory.Path;
@@ -104,19 +105,25 @@ namespace SharpCompress.Common
                     StorageFile uncompressedFile = await extractTarget.CreateFileAsync(Path.GetFileName(reader.Entry.Key), CreationCollisionOption.ReplaceExisting);
                     using (Stream outstream = await uncompressedFile.OpenStreamForWriteAsync())
                     {
-                        /*using (Stream entryStream = reader.OpenEntryStream())
+                        /*if (cancellationTokenSource != null)
                         {
-                            await entryStream.CopyToAsync(outstream);
-                            try
+                            using (Stream entryStream = reader.OpenEntryStream())
                             {
-                                entryStream.Dispose();
-                            }
-                            catch (Exception e)
-                            {
+                                await entryStream.CopyToAsync(outstream, 81920, cancellationTokenSource.Token);
+                                try
+                                {
+                                    entryStream.Dispose();
+                                }
+                                catch (Exception e)
+                                {
 
+                                }
                             }
-                        }*/
-                        reader.WriteEntryTo(outstream);
+                        }
+                        else*/
+                        {
+                            reader.WriteEntryTo(outstream, cancellationTokenSource);
+                        }
                     }
                 }
                 else

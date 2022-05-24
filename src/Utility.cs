@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using SharpCompress.Readers;
 
 namespace SharpCompress
@@ -230,7 +231,7 @@ namespace SharpCompress
             return sTime.AddSeconds(unixtime);
         }
 
-        public static long TransferTo(this Stream source, Stream destination)
+        public static long TransferTo(this Stream source, Stream destination, CancellationTokenSource cancellationTokenSource = null)
         {
             byte[] array = GetTransferByteArray();
             try
@@ -240,7 +241,12 @@ namespace SharpCompress
                 {
                     total += count;
                     destination.Write(array, 0, count);
+                    if (cancellationTokenSource.IsCancellationRequested)
+                    {
+                        break;
+                    }
                 }
+               
                 return total;
             }
             finally
@@ -249,7 +255,7 @@ namespace SharpCompress
             }
         }
 
-        public static long TransferTo(this Stream source, Stream destination, Common.Entry entry, IReaderExtractionListener readerExtractionListener)
+        public static long TransferTo(this Stream source, Stream destination, Common.Entry entry, IReaderExtractionListener readerExtractionListener, CancellationTokenSource cancellationTokenSource = null)
         {
             byte[] array = GetTransferByteArray();
             try
@@ -262,6 +268,10 @@ namespace SharpCompress
                     destination.Write(array, 0, count);
                     iterations++;
                     readerExtractionListener.FireEntryExtractionProgress(entry, total, iterations);
+                    if (cancellationTokenSource.IsCancellationRequested)
+                    {
+                        break;
+                    }
                 }
                 return total;
             }

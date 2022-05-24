@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using SharpCompress.Common;
 using Windows.Storage;
@@ -50,10 +51,10 @@ namespace SharpCompress.Readers
         /// </summary>
         ///  
         public static async Task WriteEntryToDirectory(this IReader reader, StorageFolder destinationDirectory,
-                                                 ExtractionOptions options = null)
+                                                 ExtractionOptions options = null, CancellationTokenSource cancellationTokenSource = null)
         {
             await ExtractionMethods.WriteEntryToDirectory(reader.Entry, destinationDirectory, options,
-                                              reader);
+                                              reader, cancellationTokenSource);
         }
         /// <summary>
         /// Extract to specific file

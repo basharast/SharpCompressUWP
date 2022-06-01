@@ -32,6 +32,7 @@ In progress, currently only two main functions ported
 
 It will support any UWP project (build 14393+)
 
+but if you want to compile your project with .NETNativeToolChain use 16299+ as min target
 
 # Usage
 
